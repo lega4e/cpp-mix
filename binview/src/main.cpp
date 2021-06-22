@@ -1,5 +1,6 @@
 #include <cstring>
 #include <iostream>
+#include <sstream>
 
 
 using namespace std;
@@ -32,29 +33,101 @@ string binval(uint8_t one)
 // main
 int main( int argc, char *argv[] )
 {
-	char mode = 'h';
+	string ifname, ofname;
 
+	FILE *ifile = stdin;
+	FILE *ofile = stdout;
+
+
+
+	// flag handling
+	char mode = 'h';
 	for (int i = 1; i < argc; ++i)
 	{
 		if (!strcmp("-h", argv[i]) || !strcmp("--hex", argv[i]))
 			mode = 'h';
 		else if (!strcmp("-b", argv[i]) || !strcmp("--bin", argv[i]))
 			mode = 'b';
+		else if (!strcmp("-i", argv[i]) || argv[i][0] != '-')
+		{
+			if (argv[i][0] == '-')
+			{
+				++i;
+				if (i >= argc)
+				{
+					fprintf(stderr, "Error: require input file name for option -i\n");
+					return 1;
+				}
+			}
+
+			ifname = argv[i];
+		}
+		else if (!strcmp("-o", argv[i]))
+		{
+			++i;
+			if (i >= argc)
+			{
+				fprintf(stderr, "Error: require input file name for option -i\n");
+				return 1;
+			}
+
+			ofname = argv[i];
+		}
+		else
+		{
+			fprintf(stderr, "Error: unknown flag %s\n", argv[i]);
+			return 1;
+		}
+	}
+
+
+
+	// converting
+	if (!ifname.empty())
+	{
+		ifile = fopen(ifname.c_str(), "r");
+		if (!ifile)
+		{
+			fprintf(stderr, "Error: can't open file %s\n", ifname.c_str());
+			return 1;
+		}
 	}
 
 	int c = 0;
-	uint8_t ch;
-	while(cin.read((char *)&ch, 1))
+	int ch;
+	stringstream out;
+	while ((ch = getc(ifile)) != EOF)
 	{
 		if (mode == 'h')
-			printf("%c%c ", hexval(ch / 16), hexval(ch % 16));
+			out << hexval(ch / 16) << hexval(ch % 16) << ' ';
 		else
-			printf("%s ", binval(ch).c_str());
+			out << binval(ch) << " ";
 
 		++c;
 		if(c % 4 == 0)
-			putchar('\n');
+			out << '\n';
 	}
+
+	if (ifile != stdin)
+		fclose(ifile);
+
+
+
+	// writing
+	if (!ofname.empty())
+	{
+		ofile = fopen(ofname.c_str(), "w");
+		if (!ofile)
+		{
+			fprintf(stderr, "Error: can't open file %s\n", ofname.c_str());
+			return 1;
+		}
+	}
+
+	fprintf(ofile, "%s", out.str().c_str());
+
+	if (ofile != stdout)
+		fclose(ofile);
 
 
 
