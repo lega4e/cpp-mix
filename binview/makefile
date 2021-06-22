@@ -6,11 +6,11 @@ libs    :=
 
 
 
-# view
-build: view
+# bview
+build: bview
 
-run: view
-	view 
+run: bview
+	bview 
 
 
 re: clean build
@@ -26,7 +26,7 @@ object_files    := $(notdir $(object_files))
 object_files    := $(addprefix target/,$(object_files))
 VPATH           := $(source_dirs)
 
-view: ./target $(object_files)
+bview: ./target $(object_files)
 	g++ $(ldflags) -o $@ $(object_files) $(libs)
 
 ./target:
@@ -41,7 +41,7 @@ include $(wildcard target/*.d)
 
 # clean
 clean:
-	-rm target/*.o view
+	-rm target/*.o bview
 
 
 
