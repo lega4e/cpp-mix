@@ -108,6 +108,9 @@ int main( int argc, char *argv[] )
 			out << '\n';
 	}
 
+	if (c % 4)
+		out << '\n';
+
 	if (ifile != stdin)
 		fclose(ifile);
 
