@@ -6,11 +6,11 @@ libs    :=
 
 
 
-# montekarlo
-build: montekarlo
+# montecarlo
+build: montecarlo
 
-run: montekarlo
-	montekarlo 
+run: montecarlo
+	montecarlo 
 
 
 re: clean build
@@ -26,7 +26,7 @@ object_files    := $(notdir $(object_files))
 object_files    := $(addprefix target/,$(object_files))
 VPATH           := $(source_dirs)
 
-montekarlo: ./target $(object_files)
+montecarlo: ./target $(object_files)
 	g++ $(ldflags) -o $@ $(object_files) $(libs)
 
 ./target:
@@ -41,7 +41,7 @@ include $(wildcard target/*.d)
 
 # clean
 clean:
-	-rm target/*.o montekarlo
+	-rm target/*.o montecarlo
 
 
 
